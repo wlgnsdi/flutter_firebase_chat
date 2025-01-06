@@ -20,7 +20,7 @@ $ flutter pub run build_runner build --delete-conflicting-outputs
 Firestore 를 활용해서 데이터베이스를 구성 했으며, Firebase 에서 Firestore 데이터베이스 2개를 만들어서 사용했습니다.  
 `기본 데이터베이스` 와 `chatroom 데이터베이스` 를 만들었습니다.
 
-![캡처](/asset/firestore.png)  
+![데이터베이스](/asset/firestore.png)  
 
 ## 3. 프로젝트 환경, 구조 및 형태
 Flutter version 3.27.0  
@@ -28,3 +28,10 @@ Dart version 3.6.0
 Mac OS Sequioa 15.2  
 
 회원가입은 별도로 구성하지 않았으며 `email 로그인`을 구성해놓았습니다. email 아이디는 Firebase 에서 추가하셔서 사용하기 바랍니다.
+
+
+## 4. 화면
+스크린샷 화면을 참고해주세요.
+| 로그인  | 로그인 후 | 빈 채팅 화면 | 채팅방 존재 | 채팅방 |
+|:-----:|:-------:|:---------:|:--------:|:-----:|
+![데이터베이스](/asset/1.png) | ![데이터베이스](/asset/2.png) | ![데이터베이스](/asset/3.png) |  ![데이터베이스](/asset/5.png) | ![데이터베이스](/asset/4.png) |
