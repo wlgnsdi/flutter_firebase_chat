@@ -16,7 +16,6 @@ class ChatListViewMdoel extends _$ChatListViewMdoel {
   List<String> build() {
     _firestore = FirebaseFirestore.instanceFor(
         app: Firebase.app(), databaseId: 'chatroom');
-    loadChatRoomList();
     return [];
   }
 
@@ -29,8 +28,10 @@ class ChatListViewMdoel extends _$ChatListViewMdoel {
         return element['roomNo'] as String;
       })
     ];
-    state = chatRoomList;
+    
     isLoading = false;
+
+    state = chatRoomList;
   }
 
 }

@@ -11,6 +11,10 @@ class ChatListPage extends ConsumerWidget {
     final chatRoomList = ref.watch(chatListViewMdoelProvider);
     final viewModel = ref.read(chatListViewMdoelProvider.notifier);
 
+    WidgetsBinding.instance.addPostFrameCallback((callback) {
+      viewModel.loadChatRoomList();
+    });
+
     return SafeArea(
       child: Scaffold(
           floatingActionButton: FloatingActionButton(
@@ -32,24 +36,26 @@ class ChatListPage extends ConsumerWidget {
           ),
           body: viewModel.isLoading
               ? Center(child: CircularProgressIndicator())
-              : ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: chatRoomList.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text('Chat Room $index'),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                ChatScreen(chattingRoom: chatRoomList[index]),
-                          ),
+              : chatRoomList.isNotEmpty
+                  ? ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: chatRoomList.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text('Chat Room $index'),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ChatScreen(
+                                    chattingRoom: chatRoomList[index]),
+                              ),
+                            );
+                          },
                         );
                       },
-                    );
-                  },
-                )),
+                    )
+                  : Center(child: Text('채팅방이 없습니다.'))),
     );
   }
 }
