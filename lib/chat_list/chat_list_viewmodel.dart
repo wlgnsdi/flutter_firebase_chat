@@ -1,37 +1,62 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+part 'chat_list_viewmodel.freezed.dart';
 part 'chat_list_viewmodel.g.dart';
 
-// flutter pub run build_runner build --delete-conflicting-outputs
+@freezed
+class ChatRoom with _$ChatRoom {
+  const factory ChatRoom({
+    required String roomNo,
+    required String lastMessage,
+    required DateTime lastMessageTime,
+  }) = _ChatRoom;
+
+  factory ChatRoom.fromFirestore(Map<String, dynamic> data) {
+    return ChatRoom(
+      roomNo: data['roomNo'] as String,
+      lastMessage: data['lastMessage'] as String? ?? '',
+      lastMessageTime: (data['lastMessageTime'] as Timestamp).toDate(),
+    );
+  }
+}
 
 @riverpod
-class ChatListViewMdoel extends _$ChatListViewMdoel {
+class ChatListViewModel extends _$ChatListViewModel {
   late FirebaseFirestore _firestore;
-  List<String> chatRoomList = [];
-  bool isLoading = true;
-
+  
   @override
-  List<String> build() {
-    _firestore = FirebaseFirestore.instanceFor(
-        app: Firebase.app(), databaseId: 'chatroom');
-    return [];
+  AsyncValue<List<ChatRoom>> build() {
+    _firestore = FirebaseFirestore.instance;
+    loadChatRoomList();
+    return const AsyncValue.loading();
   }
 
-  loadChatRoomList() async {
-    QuerySnapshot<Map<String, dynamic>> list =
-        await _firestore.collection('chatRoom').get();
-
-    chatRoomList = [
-      ...list.docs.map((element) {
-        return element['roomNo'] as String;
-      })
-    ];
-    
-    isLoading = false;
-
-    state = chatRoomList;
+  Future<void> loadChatRoomList() async {
+    try {
+      state = const AsyncValue.loading();
+      final snapshot = await _firestore.collection('chatRoom').get();
+      
+      final chatRooms = snapshot.docs.map((doc) => 
+        ChatRoom.fromFirestore(doc.data())).toList();
+      
+      state = AsyncValue.data(chatRooms);
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
   }
 
+  Future<void> createChatRoom(String roomName) async {
+    try {
+      await _firestore.collection('chatRoom').add({
+        'roomNo': roomName,
+        'lastMessage': '',
+        'lastMessageTime': Timestamp.now(),
+      });
+      loadChatRoomList();
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
